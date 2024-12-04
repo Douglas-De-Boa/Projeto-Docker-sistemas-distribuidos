@@ -1,0 +1,31 @@
+# Usar uma imagem base do Node.js
+FROM node:16
+
+# Definir o diretório de trabalho dentro do container
+WORKDIR /app
+
+# Copiar os arquivos do backend para dentro do container
+COPY ./backend/package.json ./backend/package-lock.json ./
+
+# Instalar as dependências do backend
+RUN npm install
+
+# Instalar o cliente MySQL
+RUN apt-get update && apt-get install -y default-mysql-client
+
+
+# Copiar os outros arquivos do backend
+COPY ./backend ./
+
+# Definir a variável de ambiente para o banco de dados (se necessário)
+# O MySQL será acessado através do nome do serviço 'db' (que será configurado no docker-compose)
+ENV DB_HOST=db
+ENV DB_USER=root
+ENV DB_PASSWORD=d0ug9743
+ENV DB_NAME=fichas_db
+
+# Expor a porta 3000 (ou a que você configurar no backend)
+EXPOSE 3000
+
+# Rodar o servidor Node.js
+CMD ["node", "index.js"]
